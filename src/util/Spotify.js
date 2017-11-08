@@ -13,25 +13,25 @@ class AccessTokenObject {
             this._expiryTime = null;
         }
     }
-    
+
     get token() {
-        return this._token;
+        return this._token; // Adding a comment
     }
-    
+
     get isExpired() {
         if (this._expiryTime)
             return Date.now() > this._expiryTime;
         else
             return true;
     }
-    
+
     get isValid() {
         return (this._token && !this.isExpired);
     }
 };
 
-const parseQuery = function (queryString) { //SO snippet from Raivo Fishmeister
-    if (queryString[0] === '#') queryString = queryString.replace('#', '');
+const parseQuery = (queryString) => { //SO snippet from Raivo Fishmeister
+    if (queryString[0] === '#') queryString = queryString.replace('#', ''); // But I had to add this line
     var query = {};
     var pairs = (queryString[0] === '?' ? queryString.substr(1) : queryString).split('&');
     for (var i = 0; i < pairs.length; i++) {
@@ -44,7 +44,7 @@ const parseQuery = function (queryString) { //SO snippet from Raivo Fishmeister
 let tokenObject = {};
 
 const Spotify = {
-    
+
     getAccessToken: function () {
         if (tokenObject.isValid) {
             // Valid token in object
@@ -52,8 +52,10 @@ const Spotify = {
         } else {
             // Invalid token in object, get from URL
             tokenObject = new AccessTokenObject(parseQuery(window.location.hash));
+
+            // Clear url from browser address bar
             window.history.pushState('Access Token', null, '/');
-            
+
             // If token in object is now valid
             if (tokenObject.isValid) {
                 return new Promise(resolve => resolve(tokenObject));
@@ -61,12 +63,12 @@ const Spotify = {
                 // If not, redirect to auth endpoint
                 let scopes = 'playlist-modify-public playlist-modify-private';
                 window.location.replace('https://accounts.spotify.com/authorize?response_type=token&redirect_uri=' + encodeURIComponent(redirectUri) + '&client_id=' + clientId + '&scope=' + encodeURIComponent(scopes));
-                
-                return Promise.reject('Redirected');
+
+                return Promise.reject('Redirected'); // TODO - This isn't working
             }
         }
     },
-    
+
     search: function (term) {
         return Spotify.getAccessToken().then(tokenObject => {
             return fetch('https://api.spotify.com/v1/search?type=track&q=' + term, {
@@ -93,15 +95,16 @@ const Spotify = {
             });
         });
     },
-    
+
     savePlaylist: function (playlistName, trackURIs) {
-        if (!playlistName || !trackURIs) return;
-        
-        return Spotify.getAccessToken().then(tokenObject => {
-            return fetch('https://api.spotify.com/v1/me', {
+         // As per instructions in the assessment
+         if (!playlistName || !trackURIs) return;
+
+         return Spotify.getAccessToken().then(tokenObject => {
+             return fetch('https://api.spotify.com/v1/me', {
                 method : 'GET',
                 headers: {
-                    "Authorization": 'Bearer ' + tokenObject.token,
+                     "Authorization": 'Bearer ' + tokenObject.token,
                     "Content-Type" : "application/json"
                 }
             }).then(response => {
@@ -129,7 +132,7 @@ const Spotify = {
                     }, networkError => alert("Network error: " + networkError.status)
                 ).then(jsonResponse => { // Got the playlist ID
                     let playlistId = jsonResponse.id;
-                    
+
                     return fetch(`https://api.spotify.com/v1/users/${userId}/playlists/${playlistId}/tracks`, {
                         method : 'POST',
                         headers: {
