@@ -15,10 +15,12 @@ class SearchBar extends React.Component {
      }
 
      search () {
+          // When search button is clicked call parent component with search string
           this.props.onSearch(this.state.term);
      }
 
      handleTermChange (event) {
+          // Each time value on input element changes, update this.state
           this.setState({term: event.target.value});
      }
 

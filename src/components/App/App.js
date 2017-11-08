@@ -13,11 +13,12 @@ class App extends React.Component {
         super(props);
         
         this.state = {
-            searchResults : [],
-            playlistName  : "New Playlist",
-            playlistTracks: []
+            searchResults : [],              // Results from Spotify API calls
+            playlistName  : "New Playlist",  // Name of Playlist for sending to Spotify API
+            playlistTracks: []               // Array of Tracks in Playlist
         };
         
+        // Event handler 'this' bindings for all interactions
         this.addTrack = this.addTrack.bind(this);
         this.removeTrack = this.removeTrack.bind(this);
         this.updatePlaylistName = this.updatePlaylistName.bind(this);
@@ -27,6 +28,7 @@ class App extends React.Component {
     
     addTrack(trackToAdd) {
         // If the track does not already exist in the playlistTracks array, add it in there
+        // Iterate over track.ids and proceed if no match
         if (!this.state.playlistTracks.some(track => track.id === trackToAdd.id)) {
             this.setState({playlistTracks: [...this.state.playlistTracks, trackToAdd]}); // Fancy spread operator!
         }
@@ -39,12 +41,18 @@ class App extends React.Component {
     }
     
     updatePlaylistName(newName) {
+        // Pass newName (from event.target.value) to this.state.
         this.setState({playlistName: newName});
     }
     
     savePlaylist() {
+        // Make new array containing only track URIs for Spotify API
         let trackURIs = this.state.playlistTracks.map(track => track.uri);
+        
+        // Call Spotify API wrapper with playlist name and track URIs array
         Spotify.savePlaylist(this.state.playlistName, trackURIs);
+        
+        // Reset SearchResults and Playlist name
         this.setState({
             playlistName : "New Playlist",
             searchResults: []
@@ -52,7 +60,9 @@ class App extends React.Component {
     }
     
     search(term) {
+        // Call Spotify API wrapper and get array of Track model objects
         Spotify.search(term).then(searchResults => {
+            // Re-render <SearchResults /> on receiving new list
             this.setState({searchResults: searchResults});
         });
     }

@@ -9,6 +9,9 @@
 # production
 /build
 
+# resources
+/ca-resources
+
 # misc
 .DS_Store
 .env.local

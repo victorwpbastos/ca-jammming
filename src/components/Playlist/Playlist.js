@@ -11,10 +11,12 @@ class Playlist extends React.Component {
     }
     
     handleNameChange(event) {
+        // Call parent component method with search string to update parent state (because <App /> talks to Spotify using its state)
         this.props.onNameChange(event.target.value);
     }
     
     handleSave() {
+        // Again, Spotify API requests go through the <App /> component, so pass it up
         this.props.onSave();
     }
     
